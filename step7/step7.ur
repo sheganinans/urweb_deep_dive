@@ -1,5 +1,7 @@
 open List
 
+style style1
+
 sequence seq
 
 table state : { Id : int, Count : int }
@@ -8,19 +10,16 @@ table state : { Id : int, Count : int }
 fun main () =
     v <- queryX (SELECT * FROM state ORDER BY state.Id)
 		(fn x => <xml>{[x.State.Count]}<br/>
-		  <form><submit value="Incr" action={incr x.State.Id}/></form>
-		  <form><submit value="Decr" action={decr x.State.Id}/></form>
-		  <form><submit value="Del"  action={del x.State.Id}/></form><br/></xml>);
+		  <form class={style1}><submit value="Incr" action={incr x.State.Id}/></form>
+		  <form class={style1}><submit value="Decr" action={decr x.State.Id}/></form>
+		  <form class={style1}><submit value="Del"  action={del  x.State.Id}/></form><br/></xml>);
     return <xml>
-      <head>
-	<link rel="stylesheet" type="text/css" href="/style1.css"/>
-      </head>
       <body>
 	<form>
 	  <submit value="Add" action={addCounter}/>
 	</form><br/>
 	{v}</body></xml>
-
+			
 and addCounter _ =
     n <- nextval seq;
     dml (INSERT INTO state (Id, Count) VALUES ({[n]}, 0));

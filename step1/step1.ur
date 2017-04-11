@@ -8,4 +8,4 @@ fun newCounter () : transaction xbody =
 	       
 fun main () =
     c <- newCounter ();
-    return <xml><body>{[c]}</body></xml>
+    return <xml><body>{c}</body></xml>

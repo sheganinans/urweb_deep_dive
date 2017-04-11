@@ -1,3 +1,5 @@
+Step 0: Intro
+
 Step 1: Single counter.
 
 Step 2: Stack of counters.
