@@ -86,11 +86,10 @@ fun counters () =
 		   return (List.mapX
 			       (fn {Id = i, Count = c} => <xml>
 				 {[c]}
-				 <button value="Incr" onclick={fn _ => rpc (mod (Mod (i, Incr))) }/>
-				 <button value="Decr" onclick={fn _ => rpc (mod (Mod (i, Decr))) }/>
-				 <button value="Del"  onclick={fn _ => rpc (mod (Del i)) }/><br/></xml>)
+				 <button value="Incr" onclick={fn _ => rpc (mod (Mod (i, Incr)))}/>
+				 <button value="Decr" onclick={fn _ => rpc (mod (Mod (i, Decr)))}/>
+				 <button value="Del"  onclick={fn _ => rpc (mod (Del i))}/><br/></xml>)
 			       (List.sort (fn a b => gt a.Id b.Id) l)) }/>
-	
     </body></xml>
     
 fun main () = return <xml><body>
