@@ -25,9 +25,10 @@ fun render (diff : diff) (sl : source (list counter)) =
 	set sl (List.filter (fn x => x.Id <> i) l)
       | Mod (i, m) =>
 	l <- get sl;
-	set sl (List.mp (fn x => if eq x.Id i then case m of
-						       Incr => x -- #Count ++ {Count = x.Count + 1}
-						     | Decr => x -- #Count ++ {Count = x.Count - 1}
+	set sl (List.mp (fn x => if eq x.Id i
+				 then case m of
+					  Incr => x -- #Count ++ {Count = x.Count + 1}
+					| Decr => x -- #Count ++ {Count = x.Count - 1}
 				 else x) l)
 
 fun mapM_ [m] (_ : monad m) [a] [b]
@@ -47,17 +48,21 @@ fun onLoad () =
     
     mapM_ (fn x => send user.Users.Chan
 			(New (x.Counters.Id, x.Counters.Count))) ctrs
-   
+
+fun updateCount i c = dml (UPDATE counters SET Count = {[c]} WHERE Id = {[i]})
+    
 fun mod (diff : diff) =
     case diff of
 	Mod (id, m) => (
 	r <- oneOrNoRows (SELECT * FROM counters WHERE counters.Id = {[id]});
 	case r of
-	    Some c => (case m of
-			  Incr => dml (UPDATE counters SET Count = Count + 1 WHERE Id = {[c.Counters.Id]})
-			| Decr => dml (UPDATE counters SET Count = Count - 1 WHERE Id = {[c.Counters.Id]}));
-	    usrs <- queryL (SELECT * FROM users);
-	    mapM_ (fn x => send x.Users.Chan diff) usrs
+	    Some c => let val c = c.Counters
+		      in (case m of
+			      Incr => updateCount (c.Count + 1) c.Id
+			    | Decr => updateCount (c.Count - 1) c.Id);
+			 usrs <- queryL (SELECT * FROM users);
+			 mapM_ (fn x => send x.Users.Chan diff) usrs
+		      end
 	  | None => return ())
       | Del id =>
 	dml (DELETE FROM counters WHERE Id = {[id]});
@@ -65,7 +70,7 @@ fun mod (diff : diff) =
 	mapM_ (fn x => send x.Users.Chan diff) usrs
       | _ => return ()
     
-fun counters () =
+fun main () =
     me <- self;
     chan <- channel;
     dml (INSERT INTO users (Client, Chan) VALUES ({[me]}, {[chan]}));
@@ -75,7 +80,6 @@ fun counters () =
     return <xml><body onload={let fun loop () =
 				      x <- recv chan;
 				      render x sl;
-				      sleep 1;
 				      loop ()
 			      in rpc (onLoad ());
 				 loop ()
@@ -92,7 +96,3 @@ fun counters () =
 				 <button value="Del"  onclick={fn _ => rpc (mod (Del i))}/><br/></xml>)
 			       (List.sort (fn a b => gt a.Id b.Id) l))}/>
     </body></xml>
-    
-fun main () = return <xml><body>
-  <form><submit value="login" action={counters}/></form>
-</body></xml>
