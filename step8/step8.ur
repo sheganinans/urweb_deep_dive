@@ -32,12 +32,15 @@ fun render (diff : diff) (sl : source (list counter)) =
 				    | Decr => x -- #Count ++ {Count = x.Count - 1}
 			     else x) l)
 
+fun mapM_ [m ::: (Type -> Type)] (_ : monad m) [a] [b]
+	  (f : a -> m b) (x : list a) : m {} =
+    _ <- List.mapM f x; return ()
+	
 fun newCounter () =
     n <- nextval counter_seq;
     dml (INSERT INTO counters (Id, Count) VALUES ({[n]}, 0));
     usrs <- queryL (SELECT * FROM users);
-    _ <- List.mapM (fn x => send x.Users.Chan (New (n, 0))) usrs;
-    return ()
+    mapM_ (fn x => send x.Users.Chan (New (n, 0))) usrs
     
 fun onLoad () =
     me <- self;
@@ -46,10 +49,9 @@ fun onLoad () =
 		    WHERE users.Client = {[me]});
     ctrs <- queryL (SELECT * FROM counters);
     
-    _ <- List.mapM (fn x => send user.Users.Chan (New (x.Counters.Id,
-						       x.Counters.Count))) ctrs;
-    return ()
-
+    mapM_ (fn x => send user.Users.Chan (New (x.Counters.Id,
+					      x.Counters.Count))) ctrs
+   
 fun mod (diff : diff) =
     case diff of
 	Mod (id, m) => (
@@ -58,23 +60,19 @@ fun mod (diff : diff) =
 			  WHERE counters.Id = {[id]});
 	case r of
 	    Some c => (case m of
-			  Incr =>
-			  dml (UPDATE counters
-			       SET Count = Count + 1
-			       WHERE Id = {[c.Counters.Id]})
-			| Decr =>
-			  dml (UPDATE counters
-			       SET Count = Count - 1
-			       WHERE Id = {[c.Counters.Id]}));
+			  Incr => dml (UPDATE counters
+				       SET Count = Count + 1
+				       WHERE Id = {[c.Counters.Id]})
+			| Decr => dml (UPDATE counters
+				       SET Count = Count - 1
+				       WHERE Id = {[c.Counters.Id]}));
 	    usrs <- queryL (SELECT * FROM users);
-	    _ <- List.mapM (fn x => send x.Users.Chan diff) usrs;
-	    return ()
+	    mapM_ (fn x => send x.Users.Chan diff) usrs
 	  | None => return ())
       | Del id =>
 	dml (DELETE FROM counters WHERE Id = {[id]});
 	usrs <- queryL (SELECT * FROM users);
-	_ <- List.mapM (fn x => send x.Users.Chan diff) usrs;
-	return ()
+	mapM_ (fn x => send x.Users.Chan diff) usrs
       | _ => return ()
     
 fun counters () =
@@ -100,17 +98,11 @@ fun counters () =
 			       (fn {Id = i, Count = c} => <xml>
 				 {[c]}
 				 <button value="Incr"
-				 onclick={fn _ =>
-					     x <- rpc (mod (Mod (i, Incr)));
-					     return ()}/>
+				 onclick={fn _ => rpc (mod (Mod (i, Incr))) }/>
 				 <button value="Decr"
-				 onclick={fn _ =>
-					     x <- rpc (mod (Mod (i, Decr)));
-					     return ()}/>
+				 onclick={fn _ => rpc (mod (Mod (i, Decr))) }/>
 				 <button value="Del"
-				 onclick={fn _ =>
-					     x <- rpc (mod (Del i));
-					     return ()}/><br/></xml>)
+				 onclick={fn _ => rpc (mod (Del i)) }/><br/></xml>)
 			       (List.sort (fn a b => gt a.Id b.Id) l)) }/>
 	
     </body></xml>
