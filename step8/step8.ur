@@ -40,7 +40,6 @@ fun onLoad () =
     me <- self;
     user <- oneRow (SELECT * FROM users WHERE users.Client = {[me]});
     ctrs <- queryL (SELECT * FROM counters);
-    
     mapM_ (fn x => send user.Users.Chan
 			(New (x.Counters.Id, x.Counters.Count))) ctrs
 
@@ -80,8 +79,8 @@ fun main () =
 				 loop ()
 			      end}>
       
-      <button value="Add" onclick={fn _ => x <- rpc (newCounter ()); return ()}/><br/>
-
+      <button value="Add" onclick={fn _ => _ <- rpc (newCounter ()); return ()}/><br/>
+	
       <dyn signal={l <- signal sl;
 		   return (List.mapX
 			       (fn {Id = i, Count = c} => <xml>
@@ -89,5 +88,4 @@ fun main () =
 				 <button value="Incr" onclick={fn _ => rpc (mod (Mod (i, Incr)))}/>
 				 <button value="Decr" onclick={fn _ => rpc (mod (Mod (i, Decr)))}/>
 				 <button value="Del"  onclick={fn _ => rpc (mod (Del i))}/><br/></xml>)
-			       (List.sort (fn a b => gt a.Id b.Id) l))}/>
-    </body></xml>
+			       (List.sort (fn a b => gt a.Id b.Id) l))}/></body></xml>
