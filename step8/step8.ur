@@ -32,7 +32,7 @@ fun render (diff : diff) (sl : source (list counter)) =
 				    | Decr => x -- #Count ++ {Count = x.Count - 1}
 			     else x) l)
 
-fun mapM_ [m ::: (Type -> Type)] (_ : monad m) [a] [b]
+fun mapM_ [m] (_ : monad m) [a] [b]
 	  (f : a -> m b) (x : list a) : m {} =
     _ <- List.mapM f x; return ()
 	
