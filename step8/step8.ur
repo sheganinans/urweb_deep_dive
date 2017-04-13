@@ -16,20 +16,15 @@ table users : { Client : client, Chan : channel diff }
 		  PRIMARY KEY Client
 		 
 fun render (diff : diff) (sl : source (list counter)) =
+    l <- get sl;
     case diff of
-	New (i, c) =>
-	l <- get sl;
-	set sl ({Id = i, Count = c} :: l)
-      | Del i =>
-	l <- get sl;
-	set sl (List.filter (fn x => x.Id <> i) l)
-      | Mod (i, m) =>
-	l <- get sl;
-	set sl (List.mp (fn x => if eq x.Id i
-				 then case m of
-					  Incr => x -- #Count ++ {Count = x.Count + 1}
-					| Decr => x -- #Count ++ {Count = x.Count - 1}
-				 else x) l)
+	New (i, c) => set sl ({Id = i, Count = c} :: l)
+      | Del  i     => set sl (List.filter (fn x => x.Id <> i) l)
+      | Mod (i, m) => set sl (List.mp (fn x => if eq x.Id i
+					       then case m of
+							Incr => x -- #Count ++ {Count = x.Count + 1}
+						      | Decr => x -- #Count ++ {Count = x.Count - 1}
+					       else x) l)
 
 fun mapM_ [m] (_ : monad m) [a] [b]
 	  (f : a -> m b) (x : list a) : m {} =
