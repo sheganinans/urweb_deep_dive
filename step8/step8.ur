@@ -45,7 +45,8 @@ fun onLoad () =
     user <- oneRow (SELECT * FROM users WHERE users.Client = {[me]});
     ctrs <- queryL (SELECT * FROM counters);
     
-    mapM_ (fn x => send user.Users.Chan (New (x.Counters.Id, x.Counters.Count))) ctrs
+    mapM_ (fn x => send user.Users.Chan
+			(New (x.Counters.Id, x.Counters.Count))) ctrs
    
 fun mod (diff : diff) =
     case diff of
@@ -85,7 +86,7 @@ fun counters () =
       <dyn signal={l <- signal sl;
 		   return (List.mapX
 			       (fn {Id = i, Count = c} => <xml>
-				 {[c]}
+				 {[c]}<br/>
 				 <button value="Incr" onclick={fn _ => rpc (mod (Mod (i, Incr)))}/>
 				 <button value="Decr" onclick={fn _ => rpc (mod (Mod (i, Decr)))}/>
 				 <button value="Del"  onclick={fn _ => rpc (mod (Del i))}/><br/></xml>)
