@@ -78,7 +78,7 @@ fun counters () =
 				      loop ()
 			      in rpc (onLoad ());
 				 loop ()
-			      end }>
+			      end}>
       
       <button value="Add" onclick={fn _ => x <- rpc (newCounter ()); return ()}/><br/>
 
@@ -89,7 +89,7 @@ fun counters () =
 				 <button value="Incr" onclick={fn _ => rpc (mod (Mod (i, Incr)))}/>
 				 <button value="Decr" onclick={fn _ => rpc (mod (Mod (i, Decr)))}/>
 				 <button value="Del"  onclick={fn _ => rpc (mod (Del i))}/><br/></xml>)
-			       (List.sort (fn a b => gt a.Id b.Id) l)) }/>
+			       (List.sort (fn a b => gt a.Id b.Id) l))}/>
     </body></xml>
     
 fun main () = return <xml><body>
