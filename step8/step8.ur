@@ -25,12 +25,10 @@ fun render (diff : diff) (sl : source (list counter)) =
 	set sl (List.filter (fn x => x.Id <> i) l)
       | Mod (i, m) =>
 	l <- get sl;
-	set sl (List.mp (fn x =>
-			     if eq x.Id i
-			     then case m of
-				      Incr => x -- #Count ++ {Count = x.Count + 1}
-				    | Decr => x -- #Count ++ {Count = x.Count - 1}
-			     else x) l)
+	set sl (List.mp (fn x => if eq x.Id i then case m of
+						       Incr => x -- #Count ++ {Count = x.Count + 1}
+						     | Decr => x -- #Count ++ {Count = x.Count - 1}
+				 else x) l)
 
 fun mapM_ [m] (_ : monad m) [a] [b]
 	  (f : a -> m b) (x : list a) : m {} =
@@ -44,28 +42,19 @@ fun newCounter () =
     
 fun onLoad () =
     me <- self;
-    user <- oneRow (SELECT *
-		    FROM users
-		    WHERE users.Client = {[me]});
+    user <- oneRow (SELECT * FROM users WHERE users.Client = {[me]});
     ctrs <- queryL (SELECT * FROM counters);
     
-    mapM_ (fn x => send user.Users.Chan (New (x.Counters.Id,
-					      x.Counters.Count))) ctrs
+    mapM_ (fn x => send user.Users.Chan (New (x.Counters.Id, x.Counters.Count))) ctrs
    
 fun mod (diff : diff) =
     case diff of
 	Mod (id, m) => (
-	r <- oneOrNoRows (SELECT *
-			  FROM counters
-			  WHERE counters.Id = {[id]});
+	r <- oneOrNoRows (SELECT * FROM counters WHERE counters.Id = {[id]});
 	case r of
 	    Some c => (case m of
-			  Incr => dml (UPDATE counters
-				       SET Count = Count + 1
-				       WHERE Id = {[c.Counters.Id]})
-			| Decr => dml (UPDATE counters
-				       SET Count = Count - 1
-				       WHERE Id = {[c.Counters.Id]}));
+			  Incr => dml (UPDATE counters SET Count = Count + 1 WHERE Id = {[c.Counters.Id]})
+			| Decr => dml (UPDATE counters SET Count = Count - 1 WHERE Id = {[c.Counters.Id]}));
 	    usrs <- queryL (SELECT * FROM users);
 	    mapM_ (fn x => send x.Users.Chan diff) usrs
 	  | None => return ())
@@ -97,12 +86,9 @@ fun counters () =
 		   return (List.mapX
 			       (fn {Id = i, Count = c} => <xml>
 				 {[c]}
-				 <button value="Incr"
-				 onclick={fn _ => rpc (mod (Mod (i, Incr))) }/>
-				 <button value="Decr"
-				 onclick={fn _ => rpc (mod (Mod (i, Decr))) }/>
-				 <button value="Del"
-				 onclick={fn _ => rpc (mod (Del i)) }/><br/></xml>)
+				 <button value="Incr" onclick={fn _ => rpc (mod (Mod (i, Incr))) }/>
+				 <button value="Decr" onclick={fn _ => rpc (mod (Mod (i, Decr))) }/>
+				 <button value="Del"  onclick={fn _ => rpc (mod (Del i)) }/><br/></xml>)
 			       (List.sort (fn a b => gt a.Id b.Id) l)) }/>
 	
     </body></xml>
