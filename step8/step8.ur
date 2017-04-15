@@ -1,13 +1,13 @@
 datatype mod = Incr | Decr
 
-datatype diff
-  = New of int * int
-  | Del of int
-  | Mod of int * mod
-
 type counterT = [Id = int, Count = int]
 			   
 type counter = $counterT
+		      
+datatype diff
+  = New of counter
+  | Del of int
+  | Mod of int * mod
 
 sequence counter_seq
 table counters : counterT
@@ -18,7 +18,7 @@ table users : { Client : client, Chan : channel diff }
 fun render (diff : diff) (sl : source (list counter)) =
     l <- get sl;
     case diff of
-	New (i, c) => set sl ({Id = i, Count = c} :: l)
+	New  c     => set sl (c :: l)
       | Del  i     => set sl (List.filter (fn x => x.Id <> i) l)
       | Mod (i, m) => set sl (List.mp (fn x => if eq x.Id i
 					       then case m of
@@ -33,13 +33,13 @@ fun newCounter () =
     n <- nextval counter_seq;
     dml (INSERT INTO counters (Id, Count) VALUES ({[n]}, 0));
     usrs <- queryL1 (SELECT users.Chan FROM users);
-    mapM_ (fn x => send x.Chan (New (n, 0))) usrs
+    mapM_ (fn x => send x.Chan (New {Id = n, Count = 0})) usrs
     
 fun onLoad () =
     me <- self;
     chan <- oneRow1 (SELECT users.Chan FROM users WHERE users.Client = {[me]});
     ctrs <- queryL1 (SELECT counters.Id, counters.Count FROM counters);
-    mapM_ (fn x => send chan.Chan (New (x.Id, x.Count))) ctrs
+    mapM_ (fn x => send chan.Chan (New {Id = x.Id, Count = x.Count})) ctrs
 
 fun updateCount i c = dml (UPDATE counters SET Count = {[c]} WHERE Id = {[i]})
 		      
