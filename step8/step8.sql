@@ -5,11 +5,9 @@ CREATE SEQUENCE uw_Step8_counter_seq;
    
   );
   
-  CREATE SEQUENCE uw_Step8_user_seq;
+  CREATE TABLE uw_Step8_users(uw_client int4 NOT NULL, uw_chan int8 NOT NULL,
+   PRIMARY KEY (uw_client)
+    
+   );
    
-   CREATE TABLE uw_Step8_users(uw_client int4 NOT NULL, uw_chan int8 NOT NULL,
-    PRIMARY KEY (uw_client)
-     
-    );
-    
-    
+   

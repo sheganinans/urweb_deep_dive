@@ -1,23 +1,26 @@
+type counterT = [Id = int, Count = int]
+		
+table counters : counterT
+
+type counter = $counterT
+		 
 datatype mod = Incr | Decr
 
 datatype diff
-  = New of int * int
+  = Init of list counter
+  | New of int * int
   | Del of int
   | Mod of int * mod
 		      
-type counter = { Id : int, Count : int }
-
 sequence counter_seq
-table counters : { Id : int, Count : int }
-		     PRIMARY KEY Id
-
 table users : { Client : client, Chan : channel diff }
 		  PRIMARY KEY Client
 		 
 fun render (diff : diff) (sl : source (list counter)) =
     l <- get sl;
     case diff of
-	New (i, c) => set sl ({Id = i, Count = c} :: l)
+        Init l     => set sl l
+      | New (i, c) => set sl ({Id = i, Count = c} :: l)
       | Del  i     => set sl (List.filter (fn x => x.Id <> i) l)
       | Mod (i, m) => set sl (List.mp (fn x => if eq x.Id i
 					       then case m of
@@ -36,9 +39,9 @@ fun newCounter () =
     
 fun onLoad () =
     me <- self;
-    chan <- oneRow1 (SELECT * FROM users WHERE users.Client = {[me]});
+    chan <- oneRow1 (SELECT users.Chan FROM users WHERE users.Client = {[me]});
     ctrs <- queryL (SELECT * FROM counters);
-    mapM_ (fn x => send chan.Chan (New (x.Counters.Id, x.Counters.Count))) ctrs
+    send chan.Chan (Init (List.mp (fn x => x.Counters) ctrs))
 
 fun updateCount i c = dml (UPDATE counters SET Count = {[c]} WHERE Id = {[i]})
 		      

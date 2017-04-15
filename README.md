@@ -13,3 +13,5 @@ Step 6: DOM Garbage Collection.
 Step 7: Persisting to DB.
 
 Step 8: Realtime updates.
+
+Step 9: Init batching
