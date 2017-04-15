@@ -38,8 +38,8 @@ fun newCounter () =
 fun onLoad () =
     me <- self;
     chan <- oneRow1 (SELECT * FROM users WHERE users.Client = {[me]});
-    ctrs <- queryL (SELECT * FROM counters);
-    mapM_ (fn x => send chan.Chan (New (x.Counters.Id, x.Counters.Count))) ctrs
+    ctrs <- queryL1 (SELECT counters.Id, counters.Count FROM counters);
+    mapM_ (fn x => send chan.Chan (New (x.Id, x.Count))) ctrs
 
 fun updateCount i c = dml (UPDATE counters SET Count = {[c]} WHERE Id = {[i]})
 		      
