@@ -1,7 +1,8 @@
 type counterT = [Id = int, Count = int]
 		
 table counters : counterT
-
+	       PRIMARY KEY Id
+		 
 type counter = $counterT
 		 
 datatype mod = Incr | Decr

@@ -11,6 +11,7 @@ datatype diff
 
 sequence counter_seq
 table counters : counterT
+		 PRIMARY KEY Id
 
 table users : { Client : client, Chan : channel diff }
 		  PRIMARY KEY Client
