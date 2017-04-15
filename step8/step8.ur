@@ -4,12 +4,13 @@ datatype diff
   = New of int * int
   | Del of int
   | Mod of int * mod
-		      
-type counter = { Id : int, Count : int }
+
+type counterT = [Id = int, Count = int]
+			   
+type counter = $counterT
 
 sequence counter_seq
-table counters : { Id : int, Count : int }
-		     PRIMARY KEY Id
+table counters : counterT
 
 table users : { Client : client, Chan : channel diff }
 		  PRIMARY KEY Client
