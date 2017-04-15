@@ -34,7 +34,7 @@ fun mapM_ [m] (_ : monad m) [a] [b]
 fun newCounter () =
     n <- nextval counter_seq;
     dml (INSERT INTO counters (Id, Count) VALUES ({[n]}, 0));
-    usrs <- queryL1 (SELECT * FROM users);
+    usrs <- queryL1 (SELECT users.Chan FROM users);
     mapM_ (fn x => send x.Chan (New (n, 0))) usrs
     
 fun onLoad () =
@@ -53,12 +53,12 @@ fun mod (diff : diff) =
 	    Some c => (case m of
 			   Incr => updateCount (c.Count + 1) c.Id
 			 | Decr => updateCount (c.Count - 1) c.Id);
-	    usrs <- queryL1 (SELECT * FROM users);
+	    usrs <- queryL1 (SELECT users.Chan FROM users);
 	    mapM_ (fn x => send x.Chan diff) usrs
 	  | None => return ())
       | Del id =>
 	dml (DELETE FROM counters WHERE Id = {[id]});
-	usrs <- queryL1 (SELECT * FROM users);
+	usrs <- queryL1 (SELECT users.Chan FROM users);
 	mapM_ (fn x => send x.Chan diff) usrs
       | _ => return ()
     
