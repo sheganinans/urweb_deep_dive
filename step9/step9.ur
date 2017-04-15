@@ -24,9 +24,10 @@ fun render (diff : diff) (sl : source (list counter)) =
       | New  c     => set sl (c :: l)
       | Del  i     => set sl (List.filter (fn x => x.Id <> i) l)
       | Mod (i, m) => set sl (List.mp (fn x => if eq x.Id i
-					       then case m of
-							Incr => x -- #Count ++ {Count = x.Count + 1}
-						      | Decr => x -- #Count ++ {Count = x.Count - 1}
+					       then x -- #Count ++
+						      {Count = (case m of
+								    Incr => x.Count + 1
+								  | Decr => x.Count - 1)}
 					       else x) l)
 
 fun mapM_ [m] (_ : monad m) [a] [b]
