@@ -36,16 +36,16 @@ fun act (a : action) =
 
 fun biggestId (l : list counter) : int = List.foldl (fn c acc => max c.Id acc) 0 l
 
-fun mod (i : int) (d : int) (l : list counter) : list counter =
+fun mod (i : int) (m : mod) (l : list counter) : list counter =
     List.mp (fn x => if x.Id = i
-		     then x -- #Count ++ {Count = x.Count + d}
+		     then x -- #Count ++ {Count = x.Count + (mod2Int m)}
 		     else x) l
 					 
 fun render (sl : source (list counter)) (a : action) =
     l <- get sl;
     set sl (case a of
 		New => {Id = biggestId l + 1, Count = 0} :: l
-	      | Mod (i,m) => mod i (mod2Int m) l
+	      | Mod (i,m) => mod i m l
 	      | Del i => List.filter (fn x => x.Id <> i) l)
     
 fun renderAndSend (sl : source (list counter)) (a : action) =
