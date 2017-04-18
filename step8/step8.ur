@@ -15,17 +15,19 @@ table counters : counterT
 
 table users : { Client : client, Chan : channel diff }
 		  PRIMARY KEY Client
-		 
+
+fun mod2Int (m : mod) : int = case m of Incr => 1 | Decr => neg 1
+		  
+fun update (i : int) (d : mod) =
+    dml (UPDATE counters SET Count = Count + {[mod2Int d]} WHERE Id = {[i]})
+	      
 fun render (diff : diff) (sl : source (list counter)) =
     l <- get sl;
     case diff of
 	New  c     => set sl (c :: l)
       | Del  i     => set sl (List.filter (fn x => x.Id <> i) l)
       | Mod (i, m) => set sl (List.mp (fn x => if eq x.Id i
-					       then  x -- #Count ++
-						       {Count = (case m of
-								     Incr => x.Count + 1
-								   | Decr => x.Count - 1)}
+					       then  x -- #Count ++ {Count = x.Count + (mod2Int m)}
 					       else x) l)
 
 fun mapM_ [m] (_ : monad m) [a] [b]
@@ -42,17 +44,13 @@ fun onLoad () =
     chan <- oneRow1 (SELECT users.Chan FROM users WHERE users.Client = {[me]});
     ctrs <- queryL1 (SELECT counters.Id, counters.Count FROM counters);
     mapM_ (fn x => send chan.Chan (New {Id = x.Id, Count = x.Count})) ctrs
-
-fun updateCount i c = dml (UPDATE counters SET Count = {[c]} WHERE Id = {[i]})
 		      
 fun mod (diff : diff) =
     case diff of
 	Mod (id, m) => (
 	r <- oneOrNoRows1 (SELECT * FROM counters WHERE counters.Id = {[id]});
 	case r of
-	    Some c =>(case m of
-			  Incr => updateCount (c.Count + 1) c.Id
-			| Decr => updateCount (c.Count - 1) c.Id);
+	    Some c => update c.Id m;
 	    usrs <- queryL1 (SELECT users.Chan FROM users);
 	    mapM_ (fn x => send x.Chan diff) usrs
 	  | None => return ())

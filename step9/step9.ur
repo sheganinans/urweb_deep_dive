@@ -45,16 +45,18 @@ fun onLoad () =
     ctrs <- queryL1 (SELECT * FROM counters);
     send chan.Chan (Init ctrs)
 
-fun updateCount i c = dml (UPDATE counters SET Count = {[c]} WHERE Id = {[i]})
-		      
+fun mod2Int (m : mod) : int = case m of Incr => 1 | Decr => neg 1
+		  
+fun update (i : int) (d : mod) =
+    dml (UPDATE counters SET Count = Count + {[mod2Int d]} WHERE Id = {[i]})
+    		      
 fun mod (diff : diff) =
     case diff of
 	Mod (id, m) => (
 	r <- oneOrNoRows1 (SELECT * FROM counters WHERE counters.Id = {[id]});
 	case r of
-	    Some c => (case m of
-			   Incr => updateCount (c.Count + 1) c.Id
-			 | Decr => updateCount (c.Count - 1) c.Id);
+	    Some c =>
+	    update c.Id m;
 	    usrs <- queryL1 (SELECT users.Chan FROM users);
 	    mapM_ (fn x => send x.Chan diff) usrs
 	  | None => return ())

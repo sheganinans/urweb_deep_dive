@@ -1,0 +1,7 @@
+database dbname=test hostaddr=127.0.0.1 user=postgres
+sql step10.sql
+safeGet Step10/main
+
+$/list
+
+step10

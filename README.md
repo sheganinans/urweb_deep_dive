@@ -15,3 +15,11 @@ Step 7: Persisting to DB.
 Step 8: Realtime updates.
 
 Step 9: Init batching
+
+Step 10: Reducing database load
+
+Step 11: Client side responsiveness
+
+Step 12: Making the database lazy
+
+Step 13: Making the client lazy
