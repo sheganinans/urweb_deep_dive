@@ -1,2 +1,0 @@
-all:
-	urweb step7
