@@ -128,9 +128,17 @@ fun newSrcList (i : int) : transaction (list (source counter)) =
 	
 style wide_div
 style inline_div
-style exclaim_button
 style const_button
-      
+
+fun show_counter (c : counter) = 
+    <xml><div class={inline_div}><div class={wide_div}>{[c.Count]}</div>
+      <button value="⇧" class={const_button}
+              onclick={fn _ => rpc (serverHandler (In.Mod (c.Id, In.Incr)))}/><br/>
+      <button value="☢" class={const_button}
+	      onclick={fn _ => rpc (serverHandler (In.Clear c.Id))}/><br/>
+      <button value="⇩" class={const_button}
+	      onclick={fn _ => rpc (serverHandler (In.Mod (c.Id, In.Decr)))}/></div></xml>
+
 fun main () =
     me <- self;
     chan <- channel;
@@ -138,28 +146,19 @@ fun main () =
 
     sl <- newSrcList (max_counters-1);
     
-    return <xml>
-      <head>
-	<link rel="stylesheet" type="text/css" href="/style1.css"/>
-      </head>
+    return <xml><head><link rel="stylesheet" type="text/css" href="/style1.css"/></head>
       <body onload={let fun loop () =
 			    msg <- recv chan;
 			    clientHandler sl msg;
 			    loop ()
 		    in rpc (onLoad ()); loop () end}>
 
-      <button value="Add" onclick={fn _ => rpc (serverHandler In.New)}/><br/>
+	<button value="Add" onclick={fn _ => rpc (serverHandler In.New)}/><br/>
 
-       {List.foldl join <xml/> <|
-		   List.mp (fn c =>
-			       <xml>
-				 <dyn signal={
-			       c <- signal c;
-			       return <| if not c.Show
-					 then <xml>(*<button value="!" class={exclaim_button} onclick={fn _ => rpc (serverHandler In.New)}/>*)</xml>
-					 else
-					     <xml>
-					       <div class={inline_div}><div class={wide_div}>{[c.Count]}</div>
-						 <button value="⇧" class={const_button} onclick={fn _ => rpc (serverHandler (In.Mod (c.Id, In.Incr)))}/><br/>
-						 <button value="☢" class={const_button} onclick={fn _ => rpc (serverHandler (In.Clear c.Id))}/><br/>
-						 <button value="⇩" class={const_button} onclick={fn _ => rpc (serverHandler (In.Mod (c.Id, In.Decr)))}/></div></xml>}/></xml>) sl }</body></xml>
+	{List.foldl join <xml/> <|
+		    List.mp (fn c => <xml><dyn signal={
+				     c <- signal c;
+				     return <| if not c.Show
+					       then <xml></xml>
+					       else <xml>{show_counter c}</xml>}/></xml>) sl }
+      </body></xml>
