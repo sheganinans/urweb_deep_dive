@@ -1,0 +1,10 @@
+database dbname=test hostaddr=127.0.0.1 user=postgres
+sql step14.sql
+file /style1.css style1.css
+rewrite style Step14/*
+safeGet Step14/main
+
+$/list
+$/option
+
+step14

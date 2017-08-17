@@ -1,0 +1,10 @@
+.wide_div {
+    text-align: right;    
+    width:70px;
+    background-color:#00AACC;
+}
+
+.inline_div {
+    float:left;
+    //display:inline;
+}
