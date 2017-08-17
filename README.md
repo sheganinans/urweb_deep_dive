@@ -10,6 +10,7 @@ The focus of our entire tutorial, the humble counter:
 
 The following code below put into a .ur file (coupled with the proper .urs and .urp files) creates a page with exactly the contents of the image above.
 
+```urweb
     fun newCounter () : transaction xbody =
 		x <- source 0;
 		return <xml>
@@ -21,6 +22,7 @@ The following code below put into a .ur file (coupled with the proper .urs and .
     fun main () =
 		c <- newCounter ();
 		return <xml><body>{c}</body></xml>
+```
 
 This code also points out the finer points of the Ur/Web syntax. The 4th line in the code above has the characters "{[n]}". However, this is not syntax sugar for creating a list with a single element n. There is actually no syntax sugar for lists in Ur/Web (It's all: 1 :: 2 :: 3 :: []). Because in Ur/Web it is possible to interpolate XML inside of Ur/Web inside of XML inside of SQL inside of ..., it is important to differentiate between interpolating different types of values.
 
