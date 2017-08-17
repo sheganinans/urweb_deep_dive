@@ -109,15 +109,14 @@ fun serverHandler (msg : In.protocol) =
 		 dml (UPDATE limits SET Clears = {[limits_now.Clears + 1]} WHERE TRUE)
     
 fun clientHandler (sl : list (source counter)) (msg : Out.protocol) =
-    case msg of
-	Out.Init l => mapM_ (fn m => set (Option.unsafeGet <| List.nth sl (m.Id-1)) m) l
-      | Out.Mod  m =>
-	mapM_ (fn m => case m of
-			   Out.Set  (id,amt) => set (Option.unsafeGet <| List.nth sl (id-1))
-						    {Id = id, Count = amt, Show = True}
-			 | Out.Clear id      => set (Option.unsafeGet <| List.nth sl (id-1))
-						    {Id = id, Count = 0, Show = False}) m
-
+    let case msg of
+	    Out.Init l => mapM_ (fn m => set (getAt m.Id) m) l
+	  | Out.Mod  m =>
+	    mapM_ (fn m => case m of
+			       Out.Set  (id,amt) => set (getAt id) {Id = id, Count = amt, Show = True}
+			     | Out.Clear id      => set (getAt id) {Id = id, Count = 0, Show = False}) m
+    where fun getAt i = Option.unsafeGet <| List.nth sl (i-1) end
+    
 fun newSrcList (i : int) : transaction (list (source counter)) =
     let fun go j =
 	    if i < j then return [] else
@@ -130,14 +129,16 @@ style wide_div
 style inline_div
 style const_button
 
-fun show_counter (c : counter) = 
-    <xml><div class={inline_div}><div class={wide_div}>{[c.Count]}</div>
-      <button value="⇧" class={const_button}
-              onclick={fn _ => rpc (serverHandler (In.Mod (c.Id, In.Incr)))}/><br/>
-      <button value="☢" class={const_button}
-	      onclick={fn _ => rpc (serverHandler (In.Clear c.Id))}/><br/>
-      <button value="⇩" class={const_button}
-	      onclick={fn _ => rpc (serverHandler (In.Mod (c.Id, In.Decr)))}/></div></xml>
+fun rpc_button (v : string) (msg : In.protocol) : xbody =
+    <xml><button value={v} class={const_button}
+                 onclick={fn _ => rpc (serverHandler msg)}/></xml>
+      
+fun show_counter (c : counter) : xbody = 
+    <xml><div class={inline_div}><div class={wide_div}>
+      {[c.Count]}</div>
+      {rpc_button "⇧" (In.Mod (c.Id, In.Incr))}<br/>
+      {rpc_button "☢" (In.Clear c.Id)}<br/>
+      {rpc_button "⇩" (In.Mod (c.Id, In.Decr))}</div></xml>
 
 fun main () =
     me <- self;
@@ -160,5 +161,5 @@ fun main () =
 				     c <- signal c;
 				     return <| if not c.Show
 					       then <xml></xml>
-					       else <xml>{show_counter c}</xml>}/></xml>) sl }
+					       else <xml>{show_counter c}</xml>}/></xml>) sl}
       </body></xml>
