@@ -24,13 +24,13 @@ fun main () =
 	return <xml><body>{c}</body></xml>
 ```
 
-This code also points out the finer points of the Ur/Web syntax. The 4th line in the code above has the characters "{[n]}". However, this is not syntax sugar for creating a list with a single element n. There is actually no syntax sugar for lists in Ur/Web (It's all: 1 :: 2 :: 3 :: []). Because in Ur/Web it is possible to interpolate XML inside of Ur/Web inside of XML inside of SQL inside of ..., it is important to differentiate between interpolating different types of values.
+This code also points out the finer points of the Ur/Web syntax. The 4th line in the code above has the characters `{[n]}`. However, this is not syntax sugar for creating a list with a single element n. There is actually no syntax sugar for lists in Ur/Web (It's all: `1 :: 2 :: 3 :: []`). Because in Ur/Web it is possible to interpolate XML inside of Ur/Web inside of XML inside of SQL inside of ..., it is important to differentiate between interpolating different types of values.
 
 ![step01_02](https://i.imgur.com/07fygYa.png, "XML & Ur interpolation")
 
-The above code is perfect to show all the elements of the interpolation syntax for XML. Interpolation always uses {}, so as you can see the first type of interpolation "computed XML fragment" is used on the last line "<body>{c}</body>", the second type "injection of an Ur expression, via Top.txt function" is obviously used on line 4 mentioned earlier, and the last type "computed value" is used on lines 4, 5, and 6. As you can see the computed value interpolations in the code line up exactly with the syntax defined in the whitepaper, looking at the last line of the image the {e} line is a case of "Attribue value v" and v is used on the line "Tag g" in "h (x[=v])*" and as you can see g is used in "XML pieces on lines "<g/>" and "<g>l*</x>". Looking at the code on the increment button, the button is g, on click is x, and the interpolation of the get and set functions is v.
+The above code is perfect to show all the elements of the interpolation syntax for XML. Interpolation always uses `{}`, so as you can see the first type of interpolation `computed XML fragment` is used on the last line `<body>{c}</body>`, the second type "injection of an Ur expression, via Top.txt function" is obviously used on line 4 mentioned earlier, and the last type "computed value" is used on lines 4, 5, and 6. As you can see the computed value interpolations in the code line up exactly with the syntax defined in the whitepaper, looking at the last line of the image the `{e}` line is a case of `Attribue value v` and v is used on the line `Tag g` in `h (x[=v])*` and as you can see g is used in `XML pieces` on lines `<g/>` and "`<g>l*</x>`. Looking at the code on the `Incr` button, the button is `g`, on click is `x`, and the interpolation of the `get` and `set` functions is `v`.
 
-Exercise: Implement a (* 2) button.
+Exercise: Implement a `(* 2)` button.
 
 # Step 2: Stack of counters.
 
@@ -70,7 +70,7 @@ fun main () =
 	</body></xml>
 ```
 
-The stack is just the source "ls", which holds a mutable list of xml, which is then turned into a signal and drawn to the DOM on the last line in the built in Ur/Web tag "<dyn signal/>". A signal tag can take an immutable signal (view) of some piece of mutable data and it expects a piece of xml to be returned with possibly some values interpolated into it. The buttons mutate the state of ls and the dyn tag displays the contents.
+The stack is just the source `ls`, which holds a mutable list of `xml`, which is then turned into a `signal` and displayed on the `DOM` on the last line in the built in Ur/Web tag `<dyn signal/>`. A signal tag can take an immutable `signal` (view) of some piece of mutable data and it expects a piece of `xml` to be returned with possibly some values interpolated into it. The buttons mutate the state of `ls` and the `dyn` tag displays the contents.
 
 Exercise: Implement the clear button.
 
