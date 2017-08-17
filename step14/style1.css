@@ -1,10 +1,20 @@
 .wide_div {
     text-align: right;    
-    width:70px;
+    width: 69px;
+    border-width: 1px;
+    height: 20px;
     background-color:#00AACC;
-}
+    margin-top: 3px;
+    border-style: solid;
+    border-left: 0px;
+    border-top: 0px;
+    border-bottom: 0px;
+    border-color: #999999; }
 
 .inline_div {
-    float:left;
-    //display:inline;
-}
+    float:left; }
+
+.const_button {
+    width:70px;
+    height: 20px;
+    border-width: 1px; }
