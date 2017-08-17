@@ -1,8 +1,9 @@
-database dbname=test hostaddr=127.0.0.1 user=postgres
+database dbname=counters hostaddr=127.0.0.1 user=sheganinans password=supersafepassword???
 sql step14.sql
 file /style1.css style1.css
+rewrite url Step14/*
 rewrite style Step14/*
-safeGet Step14/main
+safeGet main
 
 $/list
 $/option

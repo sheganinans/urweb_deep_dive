@@ -18,3 +18,10 @@
     width:70px;
     height: 20px;
     border-width: 1px; }
+
+.exclaim_button {
+    margin-top: 4px;
+    width:70px;
+    float:left;
+    height:80px;
+}

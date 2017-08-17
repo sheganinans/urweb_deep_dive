@@ -48,8 +48,10 @@ fun oneTo (i : int) : list int =
      dml (DELETE FROM limits WHERE TRUE);
      dml (INSERT INTO limits (Mods, Clears) VALUES (0,0));
 
-     dml (DELETE FROM     counters WHERE TRUE);
+     dml (DELETE FROM id_pool WHERE TRUE);
+  
      dml (DELETE FROM prevCounters WHERE TRUE);
+     dml (DELETE FROM     counters WHERE TRUE);
      mapM_ (fn i => dml (INSERT INTO     counters (Id,Count,Show) VALUES ({[i]}, 0, TRUE))) (oneTo max_counters);
      mapM_ (fn i => dml (INSERT INTO prevCounters (Id,Count,Show) VALUES ({[i]}, 0, TRUE))) (oneTo max_counters)
 
@@ -128,6 +130,7 @@ fun newSrcList (i : int) : transaction (list (source counter)) =
 style wide_div
 style inline_div
 style const_button
+style exclaim_button
 
 fun rpc_button (v : string) (msg : In.protocol) : xbody =
     <xml><button value={v} class={const_button}
@@ -160,6 +163,6 @@ fun main () =
 		    List.mp (fn c => <xml><dyn signal={
 				     c <- signal c;
 				     return <| if not c.Show
-					       then <xml></xml>
+					       then <xml><button class={exclaim_button} value="!"/></xml>
 					       else <xml>{show_counter c}</xml>}/></xml>) sl}
       </body></xml>
