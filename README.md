@@ -10,17 +10,19 @@ The focus of our entire tutorial, the humble counter:
 
 The following code below put into a .ur file (coupled with the proper .urs and .urp files) creates a page with exactly the contents of the image above.
 
-    fun newCounter () : transaction xbody =
-		x <- source 0;
-		return <xml>
-			<dyn signal={n <- signal x; return <xml>{[n]}</xml>}/><br/>
-			<button value="Incr" onclick={fn _ => n <- get x; set x (n + 1)}/>
-			<button value="Decr" onclick={fn _ => n <- get x; set x (n - 1)}/>
-		</xml>
-	       
-    fun main () =
-		c <- newCounter ();
-		return <xml><body>{c}</body></xml>
+```urweb
+fun newCounter () : transaction xbody =
+	x <- source 0;
+	return <xml>
+		<dyn signal={n <- signal x; return <xml>{[n]}</xml>}/><br/>
+		<button value="Incr" onclick={fn _ => n <- get x; set x (n + 1)}/>
+		<button value="Decr" onclick={fn _ => n <- get x; set x (n - 1)}/>
+	</xml>
+
+fun main () =
+	c <- newCounter ();
+	return <xml><body>{c}</body></xml>
+```
 
 This code also points out the finer points of the Ur/Web syntax. The 4th line in the code above has the characters "{[n]}". However, this is not syntax sugar for creating a list with a single element n. There is actually no syntax sugar for lists in Ur/Web (It's all: 1 :: 2 :: 3 :: []). Because in Ur/Web it is possible to interpolate XML inside of Ur/Web inside of XML inside of SQL inside of ..., it is important to differentiate between interpolating different types of values.
 
@@ -42,29 +44,31 @@ Click the Del button, buttom element disappears:
 
 The code reuses most of the same code, it just adds more logic, making a stack of counters.
 
-    fun newCounter () : transaction xbody =
-        x <- source 0;
-        return <xml>
-            <dyn signal={n <- signal x; return <xml>{[n]}</xml>}/><br/>
-            <button value="Incr" onclick={fn _ => n <- get x; set x (n + 1)}/>
-			<button value="Decr" onclick={fn _ => n <- get x; set x (n - 1)}/>
-		</xml>
+```urweb
+fun newCounter () : transaction xbody =
+    x <- source 0;
+    return <xml>
+        <dyn signal={n <- signal x; return <xml>{[n]}</xml>}/><br/>
+        <button value="Incr" onclick={fn _ => n <- get x; set x (n + 1)}/>
+        <button value="Decr" onclick={fn _ => n <- get x; set x (n - 1)}/>
+	</xml>
 	       
-    fun main () =
-		ls <- source ([] : list xbody);
-		return <xml><body>
-			<button value="Add" onclick={fn _ =>
-				l <- get ls;
-				c <- newCounter ();
-				set ls (c :: l)}/>
-			<button value="Del" onclick={fn _ =>
-				l <- get ls;
-				case l of
-				  []     => return ()
-				| _ :: l => set ls l}/><br/>
-			<dyn signal={l <- signal ls;
-				return (List.mapX (fn x => <xml>{x}<br/></xml>) (List.rev l))}/>
-	    </body></xml>
+fun main () =
+	ls <- source ([] : list xbody);
+	return <xml><body>
+		<button value="Add" onclick={fn _ =>
+			l <- get ls;
+			c <- newCounter ();
+			set ls (c :: l)}/>
+		<button value="Del" onclick={fn _ =>
+			l <- get ls;
+    		case l of
+			  []     => return ()
+			| _ :: l => set ls l}/><br/>
+		<dyn signal={l <- signal ls;
+			return (List.mapX (fn x => <xml>{x}<br/></xml>) (List.rev l))}/>
+	</body></xml>
+```
 
 The stack is just the source "ls", which holds a mutable list of xml, which is then turned into a signal and drawn to the DOM on the last line in the built in Ur/Web tag "<dyn signal/>". A signal tag can take an immutable signal (view) of some piece of mutable data and it expects a piece of xml to be returned with possibly some values interpolated into it. The buttons mutate the state of ls and the dyn tag displays the contents.
 
@@ -80,33 +84,35 @@ After
 
 ![step03_02](https://i.imgur.com/xppjMZa.png, "Heap after")
 
-	type counter = {Count : int, Show : bool}
+```urweb
+type counter = {Count : int, Show : bool}
 
-	fun showCounter (sc : source counter) : xbody =
-		<xml>
-			<dyn signal={c <- signal sc; return <xml>{[c.Count]}</xml>}/><br/>
-			<button value="Incr" onclick={fn _ => 
-				c <- get sc
-				set sc ((c -- #Count) ++ {Count = c.Count + 1})}/>
-			<button value="Decr" onclick={fn _ =>
-				c <- get sc
-				set sc ((c -- #Count) ++ {Count = c.Count - 1})}/>
-			<button value="Del"  onclick={fn _ => 
-				c <- get sc
-				set sc ((c -- #Show)  ++ {Show  = False      })}/><br/>
-		</xml>
+fun showCounter (sc : source counter) : xbody =
+	<xml>
+		<dyn signal={c <- signal sc; return <xml>{[c.Count]}</xml>}/><br/>
+		<button value="Incr" onclick={fn _ => 
+			c <- get sc
+			set sc ((c -- #Count) ++ {Count = c.Count + 1})}/>
+		<button value="Decr" onclick={fn _ =>
+			c <- get sc
+			set sc ((c -- #Count) ++ {Count = c.Count - 1})}/>
+		<button value="Del"  onclick={fn _ => 
+			c <- get sc
+			set sc ((c -- #Show)  ++ {Show  = False      })}/><br/>
+	</xml>
 	       
-	fun main () =
-		ls <- source ([] : list (source counter));
-		return <xml><body>
-			<button value="Add" onclick={fn _ =>
-				l <- get ls;
-				ll <- List.filterM (fn xs => x <- get xs; return (x.Show <> False)) l;
-				nsc <- source {Count = 0, Show = True};
-				set ls (nsc :: ll)}/><br/>
-			<dyn signal={l <- signal ls;
-				ll <- List.filterM (fn xs => x <- signal xs; return (x.Show <> False)) l;
-				return (List.mapX showCounter (List.rev ll))}/></body></xml>
+fun main () =
+	ls <- source ([] : list (source counter));
+	return <xml><body>
+		<button value="Add" onclick={fn _ =>
+			l <- get ls;
+			ll <- List.filterM (fn xs => x <- get xs; return (x.Show <> False)) l;
+			nsc <- source {Count = 0, Show = True};
+			set ls (nsc :: ll)}/><br/>
+		<dyn signal={l <- signal ls;
+			ll <- List.filterM (fn xs => x <- signal xs; return (x.Show <> False)) l;
+			return (List.mapX showCounter (List.rev ll))}/></body></xml>
+```
 
 # Step 4: Abstracting updates. (Skip to step 7!)
 
