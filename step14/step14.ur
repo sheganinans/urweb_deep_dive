@@ -80,7 +80,7 @@ task clientLeaves = fn client => dml (DELETE FROM users WHERE Client = {[client]
 fun onLoad () =
     me <- self;
     chan <- oneRow1 (SELECT users.Chan FROM users WHERE users.Client = {[me]});
-    ctrs <- queryL1 (SELECT * FROM counters ORDER BY counters.Id ASC);
+    ctrs <- queryL1 (SELECT * FROM counters WHERE NOT (counters.Count = 0 AND counters.Show));
     send chan.Chan (Out.Init ctrs)
 
 fun serverHandler (msg : In.protocol) =
@@ -153,14 +153,14 @@ fun main () =
     return <xml><head><link rel="stylesheet" type="text/css" href="/style1.css"/></head>
       <body onload={
 	sl <- newSrcList (max_counters-1);
-	let set tbl (<xml><div class={counter_container}>
+	let rpc (onLoad ());
+            set tbl (<xml><div class={counter_container}>
                               {List.foldl join <xml/> <|
 					  List.mp (fn c => <xml><dyn signal={
 						c <- signal c;
 						return <| if not c.Show
 							  then <xml><span class={exclaim_button}>!</span></xml>
 							  else <xml>{show_counter c}</xml>}/></xml>) sl}</div></xml>);
-	    rpc (onLoad ());
 	    loop ()
 	where fun loop () =
 		msg <- recv chan;
