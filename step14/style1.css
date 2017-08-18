@@ -4,7 +4,6 @@
     border-width: 1px;
     height: 20px;
     background-color:#00AACC;
-    margin-top: 3px;
     border-style: solid;
     border-left: 0px;
     border-top: 0px;
@@ -12,17 +11,17 @@
     border-color: #999999; }
 
 .const_button {
-    width: 70px;
-    height: 20px;
-    border-width: 1px;
+    width: 100%;
+    text-align: center;
+    border-style: solid;
+    border-width: 0px 0px 1px 1px;
+    border-color: #00AACC;
     display: flex; 
     flex-direction: column; }
 
 .exclaim_button {
-    margin-top: 3px;
     width:70px;
-    float:left;
-    height:80px; }
+    height:100%; }
 
 .counter_container {
     display: flex;
