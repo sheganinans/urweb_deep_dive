@@ -148,21 +148,25 @@ fun main () =
     chan <- channel;
     dml (INSERT INTO users (Client, Chan) VALUES ({[me]}, {[chan]}));
 
-    sl <- newSrcList (max_counters-1);
-    
+    tbl <- source (<xml></xml> : xbody);
+
     return <xml><head><link rel="stylesheet" type="text/css" href="/style1.css"/></head>
-      <body onload={let fun loop () =
-			    msg <- recv chan;
-			    clientHandler sl msg;
-			    loop ()
-		    in rpc (onLoad ()); loop () end}>
+      <body onload={
+	sl <- newSrcList (max_counters-1);
+	let set tbl (<xml><div class={counter_container}>
+                              {List.foldl join <xml/> <|
+					  List.mp (fn c => <xml><dyn signal={
+						c <- signal c;
+						return <| if not c.Show
+							  then <xml><span class={exclaim_button}>!</span></xml>
+							  else <xml>{show_counter c}</xml>}/></xml>) sl}</div></xml>);
+	    rpc (onLoad ());
+	    loop ()
+	where fun loop () =
+		msg <- recv chan;
+		clientHandler sl msg;
+		loop () end}>
 
 	<button value="Add" onclick={fn _ => rpc (serverHandler In.New)}/><br/>
-
-	<div class={counter_container}>{List.foldl join <xml/> <|
-		    List.mp (fn c => <xml><dyn signal={
-				     c <- signal c;
-				     return <| if not c.Show
-					       then <xml><span class={exclaim_button}>!</span></xml>
-					       else <xml>{show_counter c}</xml>}/></xml>) sl}</div>
+	<dyn signal={signal tbl}/>
       </body></xml>
