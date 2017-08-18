@@ -160,6 +160,12 @@ fun main () =
 		clientHandler sl msg;
 		loop () end}>
 
+        <a href={bless "https://github.com/sheganinans/urweb_deep_dive"}>
+            <img style="position: absolute; top: 0; right: 0; border: 0;" 
+                 src={bless "https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"} 
+                 alt="Fork me on GitHub"/></a>
+        <br/>
 	<button value="Add" onclick={fn _ => rpc (serverHandler In.New)}/><br/>
+	<br/><br/>
 	<dyn signal={signal tbl}/>
       </body></xml>
