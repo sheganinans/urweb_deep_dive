@@ -46,14 +46,7 @@ fun oneTo (i : int) : list int =
  task initialize =
   fn () =>
      dml (DELETE FROM limits WHERE TRUE);
-     dml (INSERT INTO limits (Mods, Clears) VALUES (0,0));
-
-     dml (DELETE FROM id_pool WHERE TRUE);
-  
-     dml (DELETE FROM prevCounters WHERE TRUE);
-     dml (DELETE FROM     counters WHERE TRUE);
-     mapM_ (fn i => dml (INSERT INTO     counters (Id,Count,Show) VALUES ({[i]}, 0, TRUE))) (oneTo max_counters);
-     mapM_ (fn i => dml (INSERT INTO prevCounters (Id,Count,Show) VALUES ({[i]}, 0, TRUE))) (oneTo max_counters)
+     dml (INSERT INTO limits (Mods, Clears) VALUES (0,0))
 
 task periodic 1 =
   fn () =>

@@ -19,6 +19,9 @@
     display: flex; 
     flex-direction: column; }
 
+.const_button:hover {
+    background-color: #CCCCCC; }
+
 .exclaim_button {
     width:69px;
     text-align: center;
