@@ -140,7 +140,7 @@ fun show_counter (c : counter) : xbody =
     <xml><div class={wide_div}>
       {[c.Count]}</div>
       {rpc_button "⇧" (In.Mod (c.Id, In.Incr))}
-      {rpc_button "☢" (In.Clear c.Id)}
+      {rpc_button ":" (In.Clear c.Id)}
       {rpc_button "⇩" (In.Mod (c.Id, In.Decr))}</xml>
 
 fun main () =
@@ -163,6 +163,6 @@ fun main () =
 		    List.mp (fn c => <xml><dyn signal={
 				     c <- signal c;
 				     return <| if not c.Show
-					       then <xml><button class={exclaim_button} value="!"/></xml>
+					       then <xml><span class={exclaim_button}>!</span></xml>
 					       else <xml>{show_counter c}</xml>}/></xml>) sl}</div>
       </body></xml>

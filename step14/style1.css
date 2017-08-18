@@ -14,14 +14,17 @@
     width: 100%;
     text-align: center;
     border-style: solid;
-    border-width: 0px 0px 1px 1px;
+    border-width: 1px 0px 0px 1px;
     border-color: #00AACC;
     display: flex; 
     flex-direction: column; }
 
 .exclaim_button {
     width:70px;
-    height:100%; }
+    text-align: center;
+    line-height: 80px;
+    vertical-align: middle;  
+    display: inline-block; }
 
 .counter_container {
     display: flex;
