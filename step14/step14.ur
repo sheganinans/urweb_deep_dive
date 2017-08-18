@@ -128,20 +128,20 @@ fun newSrcList (i : int) : transaction (list (source counter)) =
     in go 1 end
 	
 style wide_div
-style inline_div
 style const_button
 style exclaim_button
-
+style counter_container
+      
 fun rpc_button (v : string) (msg : In.protocol) : xbody =
     <xml><button value={v} class={const_button}
                  onclick={fn _ => rpc (serverHandler msg)}/></xml>
       
 fun show_counter (c : counter) : xbody = 
-    <xml><div class={inline_div}><div class={wide_div}>
+    <xml><div class={wide_div}>
       {[c.Count]}</div>
-      {rpc_button "⇧" (In.Mod (c.Id, In.Incr))}<br/>
-      {rpc_button "☢" (In.Clear c.Id)}<br/>
-      {rpc_button "⇩" (In.Mod (c.Id, In.Decr))}</div></xml>
+      {rpc_button "⇧" (In.Mod (c.Id, In.Incr))}
+      {rpc_button "☢" (In.Clear c.Id)}
+      {rpc_button "⇩" (In.Mod (c.Id, In.Decr))}</xml>
 
 fun main () =
     me <- self;
@@ -159,10 +159,10 @@ fun main () =
 
 	<button value="Add" onclick={fn _ => rpc (serverHandler In.New)}/><br/>
 
-	{List.foldl join <xml/> <|
+	<div class={counter_container}>{List.foldl join <xml/> <|
 		    List.mp (fn c => <xml><dyn signal={
 				     c <- signal c;
 				     return <| if not c.Show
 					       then <xml><button class={exclaim_button} value="!"/></xml>
-					       else <xml>{show_counter c}</xml>}/></xml>) sl}
+					       else <xml>{show_counter c}</xml>}/></xml>) sl}</div>
       </body></xml>
