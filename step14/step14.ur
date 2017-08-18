@@ -133,14 +133,14 @@ style exclaim_button
 style counter_container
       
 fun rpc_button (v : string) (msg : In.protocol) : xbody =
-    <xml><div class={const_button}
-              onclick={fn _ => rpc (serverHandler msg)}>{[v]}</div></xml>
+    <xml><span class={const_button}
+              onclick={fn _ => rpc (serverHandler msg)}>{[v]}</span></xml>
       
 fun show_counter (c : counter) : xbody = 
     <xml><div class={wide_div}>
       {[c.Count]}</div>
       {rpc_button "⇧" (In.Mod (c.Id, In.Incr))}
-      {rpc_button ":" (In.Clear c.Id)}
+      {rpc_button "-" (In.Clear c.Id)}
       {rpc_button "⇩" (In.Mod (c.Id, In.Decr))}</xml>
 
 fun main () =
