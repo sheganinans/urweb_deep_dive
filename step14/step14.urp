@@ -6,6 +6,8 @@ rewrite style Step14/*
 safeGet main
 allow url https://github.com/sheganinans/urweb_deep_dive
 allow url https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png
+allow url http://statcounter.com/*
+allow url http://c.statcounter.com/*
 
 $/list
 $/option
