@@ -161,11 +161,10 @@ fun main () =
 		loop () end}>
 
         <a href={bless "https://github.com/sheganinans/urweb_deep_dive"}>
-            <img style="position: absolute; top: 0; right: 0; border: 0;" 
-                 src={bless "https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"} 
+            <img style="position: absolute; top: 0; right: 0; border: 0;"
+                 src={bless "https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png"}
                  alt="Fork me on GitHub"/></a>
-        <br/>
-	<button value="Add" onclick={fn _ => rpc (serverHandler In.New)}/><br/>
-	<br/><br/>
+	<br/>
+        <button value="Add" onclick={fn _ => rpc (serverHandler In.New)}/><br/><br/>
 	<dyn signal={signal tbl}/>
-      </body></xml>
+	<img src="http://c.statcounter.com/11426197/0/381ae425/0/" style="border:none;"/></body></xml>
