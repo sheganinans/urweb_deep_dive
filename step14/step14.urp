@@ -8,6 +8,8 @@ allow url https://github.com/sheganinans/urweb_deep_dive
 allow url https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png
 allow url http://statcounter.com/*
 allow url http://c.statcounter.com/*
+allow url https://www.revolvermaps.com/?target=enlarge&amp;i=5ojajibzn8q
+allow url http://rf.revolvermaps.com/h/m/a/7/ff0000/128/0/5ojajibzn8q.png
 
 $/list
 $/option

@@ -167,4 +167,7 @@ fun main () =
 	<br/>
         <button value="Add" onclick={fn _ => rpc (serverHandler In.New)}/><br/><br/>
 	<dyn signal={signal tbl}/>
-	<img src="http://c.statcounter.com/11426197/0/381ae425/0/" style="border:none;"/></body></xml>
+	(*<img src="http://c.statcounter.com/11426197/0/381ae425/0/" style="border:none;"/>*)
+        <a href="https://www.revolvermaps.com/?target=enlarge&amp;i=5ojajibzn8q"><img src="http://rf.revolvermaps.com/h/m/a/7/ff0000/128/0/5ojajibzn8q.png" width=256 height=128 alt="Map" style="border:0;"/></a>
+
+</body></xml>
